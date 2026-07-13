@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300"
+     font-family="Consolas, monospace" font-size="14px">
+  <rect width="100%" height="100%" fill="#ffffff" rx="10"/>
+  <text x="20" y="35" fill="#0969da" font-size="18px">nattaphom0x@github</text>
+  <line x1="20" y1="45" x2="580" y2="45" stroke="#24292f" stroke-opacity="0.3"/>
+  <text x="20" y="75" fill="#24292f">Repos: 5</text>
+  <text x="20" y="100" fill="#24292f">Stars: 0</text>
+  <text x="20" y="125" fill="#24292f">Followers: 0</text>
+  <text x="20" y="150" fill="#24292f">Commits (last year): 41</text>
+  <text x="20" y="280" fill="#24292f" font-size="10px" opacity="0.6">Last updated: 2026-07-13</text>
+</svg>

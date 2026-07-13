@@ -275,8 +275,8 @@ def build_ascii_animation(frames, art_x: int, art_start_y: int, line_height: int
 def render_svg(stats: dict, theme: str, frames) -> str:
     """theme: 'light' or 'dark'"""
     colors = {
-        "dark": {"bg": "#0d1117", "text": "#c9d1d9", "accent": "#24292f", "key": "#7ee787"},
-        "light": {"bg": "#ffffff", "text": "#24292f", "accent": "#000000", "key": "#116329"},
+        "dark": {"bg": "#0d1117", "text": "#c9d1d9", "accent": "#c9d1d9", "key": "#7ee787"},
+        "light": {"bg": "#ffffff", "text": "#24292f", "accent": "#24292f", "key": "#116329"},
     }[theme]
 
     today = date.today().isoformat()

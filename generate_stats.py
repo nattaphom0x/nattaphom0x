@@ -35,7 +35,18 @@ REST_URL = "https://api.github.com"
 
 # Folder holding the ASCII art animation frames (.txt files).
 # Each file's *lines* become one animation frame of the neofetch art.
-ASCII_ART_FOLDER = os.environ.get("ASCII_ART_FOLDER", "ASCII_ART_FOLDER")
+#
+# Resolved relative to THIS SCRIPT'S location (not the current working
+# directory), so it works the same whether you run it locally from any
+# folder, or via GitHub Actions with any `working-directory` setting.
+# You can still override it completely with an absolute path or the
+# ASCII_ART_FOLDER env var.
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_ascii_folder_setting = os.environ.get("ASCII_ART_FOLDER", "ASCII_ART_FOLDER")
+if os.path.isabs(_ascii_folder_setting):
+    ASCII_ART_FOLDER = _ascii_folder_setting
+else:
+    ASCII_ART_FOLDER = os.path.join(SCRIPT_DIR, _ascii_folder_setting)
 
 # Filename pattern used to find + order frame files inside the folder.
 # Files are sorted numerically by the number captured in group 1, so
@@ -122,10 +133,30 @@ def load_ascii_frames(folder: str):
         found[num] = lines
 
     if not found:
-        raise FileNotFoundError(
-            f"No files matching '{ASCII_ART_FILENAME_PATTERN}' found in '{folder}'. "
-            "Add at least one frame, e.g. ASCII_ART_NATTA_1.txt"
-        )
+        resolved = os.path.abspath(folder)
+        exists = os.path.isdir(resolved)
+        all_txt = sorted(glob.glob(os.path.join(folder, "*.txt"))) if exists else []
+        details = [
+            f"No files matching pattern '{ASCII_ART_FILENAME_PATTERN}' found.",
+            f"Looked in: {resolved}",
+            f"Folder exists: {exists}",
+        ]
+        if exists:
+            details.append(
+                f".txt files present there: {all_txt if all_txt else '(none)'}"
+            )
+            details.append(
+                "Note: matching is case-sensitive — 'ascii_art_natta_1.txt' will NOT "
+                "match 'ASCII_ART_NATTA_1.txt'."
+            )
+        else:
+            details.append(
+                "The folder itself doesn't exist at that path. Make sure "
+                "ASCII_ART_FOLDER (and its .txt files) is committed to the repo "
+                "at the correct location, and that any 'working-directory' set "
+                "in your workflow yml isn't pointing somewhere else."
+            )
+        raise FileNotFoundError("\n".join(details))
 
     order = ASCII_FRAME_ORDER if ASCII_FRAME_ORDER is not None else sorted(found.keys())
 

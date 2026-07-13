@@ -75,7 +75,7 @@ ASCII_FRAME_ORDER = None  # e.g. [1, 2, 3, 2]
 # matching line spacing) scale up or down, exactly like header_font_size
 # does for the big name header. Bump this down if a frame is too wide
 # for the canvas, or up if you want it larger. No content is lost.
-ASCII_ART_FONT_SIZE = 1
+ASCII_ART_FONT_SIZE = 2.5
 
 # Vertical gap between lines, in px. Leave as None to auto-derive a sane
 # value from ASCII_ART_FONT_SIZE (roughly monospace line-height); set a

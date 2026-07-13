@@ -35,5 +35,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add light_mode.svg dark_mode.svg
-          git diff --staged --quiet || git commit -m "chore: update stats SVGs"
-          git push
+          git commit -m "Update stats" || echo "No changes to commit"
+          git pull --rebase origin main
+          git push origin main

@@ -70,6 +70,18 @@ ASCII_FRAME_DURATIONS = {
 # Leave as None to auto-play every frame found, in ascending order.
 ASCII_FRAME_ORDER = None  # e.g. [1, 2, 3, 2]
 
+# --- Size control (adjust freely, just like header_font_size below) --
+# The ASCII art is never resampled/shrunk — instead its font-size (and
+# matching line spacing) scale up or down, exactly like header_font_size
+# does for the big name header. Bump this down if a frame is too wide
+# for the canvas, or up if you want it larger. No content is lost.
+ASCII_ART_FONT_SIZE = 5
+
+# Vertical gap between lines, in px. Leave as None to auto-derive a sane
+# value from ASCII_ART_FONT_SIZE (roughly monospace line-height); set a
+# number to override it directly.
+ASCII_ART_LINE_HEIGHT = None
+
 # =====================================================================
 
 
@@ -118,7 +130,8 @@ def load_ascii_frames(folder: str):
     """
     Scan `folder` for files matching ASCII_ART_FILENAME_PATTERN, sort them
     numerically, and return a list of (frame_number, lines, duration)
-    tuples in playback order.
+    tuples in playback order. Content is loaded as-is — sizing is
+    controlled separately via ASCII_ART_FONT_SIZE / ASCII_ART_LINE_HEIGHT.
     """
     pattern = re.compile(ASCII_ART_FILENAME_PATTERN)
     found = {}
@@ -190,7 +203,7 @@ INFO_LINES = [
 SHOW_STATS = False
 
 
-def build_ascii_animation(frames, art_x: int, art_start_y: int, line_height: int, accent: str) -> tuple:
+def build_ascii_animation(frames, art_x: int, art_start_y: int, line_height: int, accent: str, font_size: int) -> tuple:
     """
     Builds the SVG markup for a screen split showing looping ASCII art
     animation frames, plus the CSS keyframes that drive it.
@@ -219,7 +232,7 @@ def build_ascii_animation(frames, art_x: int, art_start_y: int, line_height: int
         )
         svg_groups.append(
             f'<g class="ascii-frame frame-{i}">'
-            f'<text fill="{accent}" font-size="13px" xml:space="preserve">{tspans}</text>'
+            f'<text fill="{accent}" font-size="{font_size}px" xml:space="preserve">{tspans}</text>'
             f'</g>'
         )
 
@@ -271,15 +284,17 @@ def render_svg(stats: dict, theme: str, frames) -> str:
     # --- Left column: animated ASCII art ---
     art_x = 20
     art_start_y = 70   # pushed down to leave room for the big header name
-    line_height = 18
+    art_font_size = ASCII_ART_FONT_SIZE
+    art_line_height = ASCII_ART_LINE_HEIGHT or round(art_font_size * 1.35)
 
     art_animation_markup, art_animation_css, art_line_count = build_ascii_animation(
-        frames, art_x, art_start_y, line_height, colors["accent"]
+        frames, art_x, art_start_y, art_line_height, colors["accent"], art_font_size
     )
 
     # --- Right column: neofetch-style info ---
     info_x = 340
     info_start_y = 70
+    line_height = 18
     info_tspans = []
     y = info_start_y
     for key, value in INFO_LINES:
@@ -322,7 +337,7 @@ def render_svg(stats: dict, theme: str, frames) -> str:
         f'xml:space="preserve">{"".join(info_tspans)}</text>'
     )
 
-    art_block_height = art_start_y + art_line_count * line_height
+    art_block_height = art_start_y + art_line_count * art_line_height
     total_height = max(art_block_height, y) + 40
 
     # --- Big animated header name with a typing effect ---
